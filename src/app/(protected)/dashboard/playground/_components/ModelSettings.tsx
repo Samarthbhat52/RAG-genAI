@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import DynamicIcons from "@/components/DynamicIcons";
 import { Rabbit, Bird, Snail } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 const modelOptions = [
   {
@@ -65,7 +66,7 @@ function ModelSettings() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="border-border space-y-8 rounded-md border p-4"
+        className="border-border space-y-6 rounded-md border p-4"
       >
         <FormField
           control={form.control}
@@ -131,7 +132,7 @@ function ModelSettings() {
             </FormItem>
           )}
         />
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <FormField
             control={form.control}
             name="topP"
