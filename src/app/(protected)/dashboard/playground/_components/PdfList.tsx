@@ -21,7 +21,7 @@ const pdfs = [
 
 function PDFList() {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border p-4">
+    <div className="flex flex-1 flex-col gap-3 rounded-md border border-border p-4">
       <div className="flex items-center justify-between">
         <Label className="text-md font-semibold">Uploaded documents</Label>
         <Button size="sm" variant="secondary" className="flex gap-2">
@@ -30,10 +30,10 @@ function PDFList() {
         </Button>
       </div>
 
-      <ScrollArea className="h-72">
+      <ScrollArea className="h-80">
         {pdfs.map((pdf) => (
           <div
-            className="mt-4 flex items-center gap-2 rounded-md bg-secondary p-2"
+            className="mt-4 flex items-center gap-2 rounded-md bg-gray-100 p-2"
             key={pdf.id}
           >
             <FaRegFilePdf size={23} />

@@ -66,7 +66,7 @@ function ModelSettings() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="border-border space-y-6 rounded-md border p-4"
+        className="flex-1 space-y-6 rounded-md border border-border p-4"
       >
         <FormField
           control={form.control}
@@ -89,7 +89,7 @@ function ModelSettings() {
                           <div className="text-left">
                             <p className="font-medium">{value.label}</p>
                             <p
-                              className="text-muted-foreground text-xs"
+                              className="text-xs text-muted-foreground"
                               data-description
                             >
                               {value.description}
@@ -113,7 +113,14 @@ function ModelSettings() {
             <FormItem>
               <FormLabel>Temperature</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="shadcn" {...field} />
+                <Input
+                  type="number"
+                  min={0.0}
+                  max={1.0}
+                  step={0.01}
+                  placeholder="shadcn"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -137,10 +144,16 @@ function ModelSettings() {
             control={form.control}
             name="topP"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Top P</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="shadcn" {...field} />
+                  <Input
+                    type="number"
+                    min={0.0}
+                    max={1.0}
+                    step={0.01}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,10 +163,10 @@ function ModelSettings() {
             control={form.control}
             name="topK"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Top K</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="shadcn" {...field} />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
