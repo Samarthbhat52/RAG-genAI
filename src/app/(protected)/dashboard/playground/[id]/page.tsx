@@ -6,8 +6,8 @@ import ChatInput from "../_components/ChatInput";
 
 function Playground() {
   return (
-    <div className="flex flex-1 gap-4 p-10">
-      <div className="hidden h-full w-1/4 flex-col space-y-4 md:flex">
+    <div className="flex flex-1 justify-center gap-4 p-10">
+      <div className="hidden h-full w-1/4 flex-col space-y-4 lg:flex">
         <ModelSettings />
         <PDFList />
       </div>

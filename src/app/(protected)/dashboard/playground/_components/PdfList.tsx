@@ -6,16 +6,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FilePlus } from "lucide-react";
 import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import FileUploader from "./FileUploader";
 
 // TODO: Fetch PDFs from database later
 const pdfs = [
@@ -47,18 +40,7 @@ function PDFList() {
             <FilePlus size={15} />
           </DialogTrigger>
           <DialogContent>
-            <UploadDropzone
-              endpoint="pdfUploader"
-              onClientUploadComplete={(res) => {
-                // Do something with the response
-                console.log("Files: ", res);
-                alert("Upload Completed");
-              }}
-              onUploadError={(error: Error) => {
-                // Do something with the error.
-                alert(`ERROR! ${error.message}`);
-              }}
-            />
+            <FileUploader />
           </DialogContent>
         </Dialog>
       </div>
