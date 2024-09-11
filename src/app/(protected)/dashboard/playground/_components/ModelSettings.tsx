@@ -31,18 +31,21 @@ const modelOptions = [
     value: "gemini-1.5-flash",
     icon: <Snail color="gray" />,
     description: "Perforformance and speed in a small package",
+    disabled: false,
   },
   {
     label: "Atom",
     value: "gemini-1.0-pro",
     icon: <Bird color="gray" />,
     description: "Lightweight and performant",
+    disabled: true,
   },
   {
     label: "Titan",
     value: "gemini-1.5-pro",
     icon: <Rabbit color="gray" />,
     description: "Our fastest model for general use cases",
+    disabled: true,
   },
 ];
 
@@ -83,7 +86,11 @@ function ModelSettings() {
                 <SelectContent>
                   {modelOptions.map((value, index) => {
                     return (
-                      <SelectItem key={index} value={value.value}>
+                      <SelectItem
+                        key={index}
+                        value={value.value}
+                        disabled={value.disabled}
+                      >
                         <div className="flex items-center gap-4">
                           {value.icon}
                           <div className="text-left">

@@ -14,6 +14,15 @@ export const playgroundRouter = createTRPCRouter({
 
     return playgrounds ?? null;
   }),
+  getSinglePlayground: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const playgroundExists = await ctx.db.query.playground.findFirst({
+        where: eq(playground.id, input.id),
+      });
+
+      return playgroundExists ?? null;
+    }),
 
   deletePlayground: protectedProcedure
     .input(z.object({ id: z.string() }))
