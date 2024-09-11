@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   serial,
@@ -32,6 +33,9 @@ export const users = createTable("user", {
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
 });
+
+export const usersSelect = users.$inferSelect;
+export const usersInsert = users.$inferInsert;
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
@@ -108,3 +112,51 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+// Files model
+export const UploadStatus = pgEnum("status", [
+  "PENDING",
+  "PROCESSING",
+  "SUCCESS",
+  "FAILED",
+]);
+
+export const playground = createTable("playground", {
+  id: varchar("id")
+    .notNull()
+    .primaryKey()
+    .unique()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const playgroundSelect = playground.$inferSelect;
+export const playgroundInsert = playground.$inferInsert;
+
+export const file = createTable("file", {
+  id: varchar("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  playgroundId: varchar("playground_id")
+    .notNull()
+    .references(() => playground.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  uploadStatus: UploadStatus("upload_status").default("PENDING"),
+  url: varchar("url"),
+  key: varchar("key"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const fileSelect = file.$inferSelect;
+export const fileInsert = file.$inferInsert;

@@ -1,9 +1,21 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FilePlus } from "lucide-react";
 import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { UploadDropzone } from "@/lib/uploadthing";
+import { cn } from "@/lib/utils";
 
 // TODO: Fetch PDFs from database later
 const pdfs = [
@@ -24,10 +36,31 @@ function PDFList() {
     <div className="flex flex-1 flex-col gap-3 rounded-md border border-border p-4">
       <div className="flex items-center justify-between">
         <Label className="text-md font-semibold">Uploaded documents</Label>
-        <Button size="sm" variant="secondary" className="flex gap-2">
-          Upload
-          <FilePlus size={15} />
-        </Button>
+        <Dialog>
+          <DialogTrigger
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "flex gap-2",
+            )}
+          >
+            Upload
+            <FilePlus size={15} />
+          </DialogTrigger>
+          <DialogContent>
+            <UploadDropzone
+              endpoint="pdfUploader"
+              onClientUploadComplete={(res) => {
+                // Do something with the response
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <ScrollArea className="h-80">
