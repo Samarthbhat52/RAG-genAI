@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Copy, CornerDownLeft, Mic, Paperclip } from "lucide-react";
+import { Copy, CornerDownLeft } from "lucide-react";
 import React from "react";
 
 function ChatInput() {

@@ -14,16 +14,13 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import DynamicIcons from "@/components/DynamicIcons";
 import { Rabbit, Bird, Snail } from "lucide-react";
-import { Label } from "@/components/ui/label";
 
 const modelOptions = [
   {

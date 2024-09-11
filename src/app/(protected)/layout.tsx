@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React from "react";
 import Header from "../_components/Header";
 
 function layout({ children }: { children: React.ReactNode }) {
