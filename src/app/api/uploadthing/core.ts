@@ -1,6 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { count, eq } from "drizzle-orm";
 import { file as fileTable } from "@/server/db/schema";
@@ -12,7 +12,7 @@ export const ourFileRouter = {
   pdfUploader: f({ pdf: { maxFileSize: "4MB", maxFileCount: 1 } })
     .input(z.object({ playgroundId: z.string() }))
     .middleware(async ({ req, input }) => {
-      const session = await getServerAuthSession();
+      const session = await auth();
 
       if (!session) throw new UploadThingError("Unauthorized");
 

@@ -1,0 +1,1 @@
+ALTER TABLE "RAG-genAI_account" DROP COLUMN IF EXISTS "refresh_token_expires_in";

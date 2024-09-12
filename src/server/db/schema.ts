@@ -61,7 +61,6 @@ export const accounts = createTable(
     scope: varchar("scope", { length: 255 }),
     id_token: text("id_token"),
     session_state: varchar("session_state", { length: 255 }),
-    refresh_token_expires_in: integer("refresh_token_expires_in"),
   },
   (account) => ({
     compoundKey: primaryKey({

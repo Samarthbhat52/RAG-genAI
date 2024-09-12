@@ -36,6 +36,13 @@
       "when": 1726147522566,
       "tag": "0004_bizarre_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1726155362030,
+      "tag": "0005_red_talisman",
+      "breakpoints": true
     }
   ]
 }

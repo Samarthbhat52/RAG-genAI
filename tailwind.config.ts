@@ -8,7 +8,11 @@ export default withUt({
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        sans: [
+          "var(--font-poppins)",
+          "var(--font-playfair-display)",
+          ...fontFamily.sans,
+        ],
       },
       borderRadius: {
         lg: "var(--radius)",

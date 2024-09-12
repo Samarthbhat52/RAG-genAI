@@ -1,10 +1,10 @@
 import Link from "next/link";
 
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   return (
     <HydrateClient>
