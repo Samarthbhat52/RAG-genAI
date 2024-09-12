@@ -153,8 +153,8 @@ export const file = createTable("file", {
     .references(() => playground.id, { onDelete: "cascade" }),
   name: varchar("name").notNull(),
   uploadStatus: UploadStatus("upload_status").default("PENDING"),
-  url: varchar("url"),
-  key: varchar("key"),
+  url: varchar("url").notNull(),
+  key: varchar("key").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -1,9 +1,9 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { FilePlus, Ghost } from "lucide-react";
+import { FilePlus, Ghost, Loader, Trash } from "lucide-react";
 import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -25,6 +25,17 @@ function PDFList() {
 
   const { data: pdfCount } = api.filesRouter.getAllFilesCount.useQuery();
 
+  const { mutate, isPending } = api.filesRouter.deleteFile.useMutation({
+    onSuccess: () => {
+      toast.success("File deleted");
+      utils.filesRouter.getAllFilesCount.invalidate();
+      utils.filesRouter.getFiles.invalidate({ playgroundId: id });
+    },
+    onError: () => {
+      toast.error("Error deleting file");
+    },
+  });
+
   return (
     <div className="flex flex-1 flex-col gap-3 rounded-md border border-border p-4">
       <div className="flex items-center justify-between">
@@ -36,7 +47,7 @@ function PDFList() {
               "flex gap-2",
             )}
             // TODO: Add files limit dynamically
-            disabled={isLoading || pdfCount?.[0]?.count === 15}
+            disabled={isLoading || pdfCount?.[0]?.count === 15 || isPending}
           >
             Upload
             <FilePlus size={15} />
@@ -60,18 +71,34 @@ function PDFList() {
       </div>
 
       {isLoading ? (
-        <Loader />
+        <SkeletonLoader />
       ) : pdfList?.length ? (
         <ScrollArea className="h-80">
           {pdfList.map((pdf) => (
             <div
-              className="mt-4 flex items-center gap-2 rounded-md bg-gray-100 p-2"
+              className="mt-4 flex items-center justify-between rounded-md bg-gray-100 p-2"
               key={pdf.id}
             >
-              <FaRegFilePdf size={23} />
-              <span className="truncate text-ellipsis font-medium">
-                {pdf.name}
-              </span>
+              <div className="flex items-center gap-2">
+                <FaRegFilePdf size={23} />
+                <span className="truncate text-ellipsis font-medium">
+                  {pdf.name}
+                </span>
+              </div>
+              <Button
+                variant={"ghost"}
+                size={"icon"}
+                className="h-8 w-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                // TODO: Fix loading state change for all files when one is deleted
+                onClick={() => mutate({ key: pdf.key })}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader size={20} className="animate-spin" />
+                ) : (
+                  <Trash size={20} />
+                )}
+              </Button>
             </div>
           ))}
           <ScrollBar orientation="vertical" />
@@ -91,7 +118,7 @@ function PDFList() {
   );
 }
 
-const Loader = () => {
+const SkeletonLoader = () => {
   return (
     <div className="flex h-80 flex-col gap-2 p-2">
       <Skeleton className="h-10 w-full" />

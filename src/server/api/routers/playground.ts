@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { playground } from "@/server/db/schema";
+import { file, playground } from "@/server/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
+import { UTApi } from "uploadthing/server";
 
 export const playgroundRouter = createTRPCRouter({
   getAllPlaygrounds: protectedProcedure.query(async ({ ctx }) => {
@@ -55,6 +56,8 @@ export const playgroundRouter = createTRPCRouter({
   deletePlayground: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const utapi = new UTApi();
+
       const playgroundAvailable = await ctx.db.query.playground.findFirst({
         where: and(
           eq(playground.userId, ctx.session.user.id),
@@ -66,6 +69,25 @@ export const playgroundRouter = createTRPCRouter({
         throw new TRPCError({
           code: "NOT_FOUND",
         });
+
+      const files = await ctx.db
+        .select({ key: file.key })
+        .from(file)
+        .where(
+          and(
+            eq(file.playgroundId, input.id),
+            eq(file.userId, ctx.session.user.id),
+          ),
+        );
+
+      try {
+        await utapi.deleteFiles(files.map((file) => file.key));
+      } catch (error) {
+        throw new TRPCError({
+          message: "Error while deleting playground",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
 
       await ctx.db
         .delete(playground)
