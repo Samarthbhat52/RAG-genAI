@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { playground } from "@/server/db/schema";
 import { redirect } from "next/navigation";
 import { lazy } from "react";
+import { MaxWidthWrapper } from "@/app/_components/MaxwidthWrapper";
 const MobileHeader = lazy(() => import("@/app/_components/MobileHeader"));
 
 async function Playground({ params }: { params: { id: string } }) {
@@ -21,7 +22,7 @@ async function Playground({ params }: { params: { id: string } }) {
 
   return (
     <HydrateClient>
-      <div className="flex w-full flex-col">
+      <MaxWidthWrapper className="flex w-full flex-col">
         <MobileHeader playground />
         <div className="flex flex-1 justify-center gap-4 p-6">
           <div className="hidden h-full w-1/4 flex-col space-y-4 lg:flex">
@@ -33,7 +34,7 @@ async function Playground({ params }: { params: { id: string } }) {
             <ChatInput />
           </div>
         </div>
-      </div>
+      </MaxWidthWrapper>
     </HydrateClient>
   );
 }
