@@ -44,7 +44,8 @@ function PDFList() {
               endpoint="pdfUploader"
               onClientUploadComplete={() => {
                 setOpen(false);
-                utils.filesRouter.getFiles.invalidate();
+                utils.filesRouter.getAllFilesCount.invalidate();
+                utils.filesRouter.getFiles.invalidate({ playgroundId: id });
                 toast.success("File(s) uploaded successfully");
               }}
               onUploadError={(error: Error) => {

@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { Plus, Trash } from "lucide-react";
+import { Ghost, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { playgroundSelect } from "@/server/db/schema";
@@ -21,7 +21,7 @@ import { format } from "date-fns";
 
 const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
   return (
-    <Card className="w-full md:w-96" key={data.id}>
+    <Card className="w-full md:w-96">
       <Link href={`/dashboard/playground/${data.id}`}>
         <div className="relative aspect-video h-24 w-full">
           <Image
@@ -65,9 +65,23 @@ function AllPlaygrounds() {
     return <Loader />;
   }
 
+  if (!data?.length) {
+    return (
+      <div className="flex w-full flex-col items-center gap-1 pt-8">
+        <Ghost size={30} />
+        <p className="text-md font-medium">Looks so empty</p>
+        <p className="text-sm text-muted-foreground">
+          Create your first playground
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2 md:flex-row md:flex-wrap">
-      {data?.map((playground) => <CardComponent data={playground} />)}
+      {data?.map((playground) => (
+        <CardComponent data={playground} key={playground.id} />
+      ))}
     </div>
   );
 }

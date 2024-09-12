@@ -9,7 +9,6 @@ import AllPlaygrounds from "./_components/AllPlaygrounds";
 const MobileHeader = lazy(() => import("@/app/_components/MobileHeader"));
 
 async function Dashboard() {
-  await api.playgroundRouter.getPlaygroundsCount.prefetch();
   await api.filesRouter.getAllFilesCount.prefetch();
   await api.playgroundRouter.getAllPlaygrounds.prefetch();
 

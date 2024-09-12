@@ -6,15 +6,6 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const playgroundRouter = createTRPCRouter({
-  getPlaygroundsCount: protectedProcedure.query(async ({ ctx }) => {
-    const playgroundsCount = await ctx.db
-      .select({ count: count() })
-      .from(playground)
-      .where(eq(playground.userId, ctx.session.user.id));
-
-    return playgroundsCount;
-  }),
-
   getAllPlaygrounds: protectedProcedure.query(async ({ ctx }) => {
     const playgrounds = await ctx.db.query.playground.findMany({
       where: eq(playground.userId, ctx.session.user.id),
@@ -31,6 +22,26 @@ export const playgroundRouter = createTRPCRouter({
       });
 
       return playgroundExists ?? null;
+    }),
+
+  createPlayground: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(3),
+        description: z.string().max(100).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createdPlayground = await ctx.db
+        .insert(playground)
+        .values({
+          name: input.name,
+          description: input.description,
+          userId: ctx.session.user.id,
+        })
+        .returning();
+
+      return createdPlayground[0];
     }),
 
   deletePlayground: protectedProcedure

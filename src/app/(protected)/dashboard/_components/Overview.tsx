@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function OverviewCards() {
   const { data: playgrounds, isLoading: playgroundsLoading } =
-    api.playgroundRouter.getPlaygroundsCount.useQuery();
+    api.playgroundRouter.getAllPlaygrounds.useQuery();
 
   const { data: files, isLoading: filesLoading } =
     api.filesRouter.getAllFilesCount.useQuery();
@@ -33,11 +33,9 @@ function OverviewCards() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-2xl font-bold">
-            {playgrounds ? playgrounds[0]?.count : 0} / 5
+            {playgrounds && playgrounds.length} / 5
           </p>
-          <Progress
-            value={playgrounds ? (playgrounds[0]?.count! / 5) * 100 : 0}
-          />
+          <Progress value={playgrounds && (playgrounds.length / 5) * 100} />
         </CardContent>
         <CardFooter>
           <p className="text-sm text-muted-foreground">
