@@ -101,7 +101,7 @@ function AllPlaygrounds() {
   }
 
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:flex-wrap">
+    <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
       {data?.map((playground) => (
         <CardComponent data={playground} key={playground.id} />
       ))}

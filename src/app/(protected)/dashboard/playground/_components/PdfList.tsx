@@ -60,7 +60,7 @@ function PDFList() {
 
       {isLoading ? (
         <Loader />
-      ) : pdfList ? (
+      ) : pdfList?.length ? (
         <ScrollArea className="h-80">
           {pdfList.map((pdf) => (
             <div
@@ -76,9 +76,14 @@ function PDFList() {
           <ScrollBar orientation="vertical" />
         </ScrollArea>
       ) : (
-        <div className="flex h-80 flex-col items-center justify-center gap-3">
+        <div className="flex h-80 flex-col items-center justify-center gap-2">
           <Ghost className="text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">No files uploaded</p>
+          <div className="text-center">
+            <p className="text-sm font-medium">No files uploaded</p>
+            <p className="text-xs text-muted-foreground">
+              Upload some PDFs to talk with worm.
+            </p>
+          </div>
         </div>
       )}
     </div>

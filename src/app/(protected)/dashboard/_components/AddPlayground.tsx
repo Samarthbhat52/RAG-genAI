@@ -32,7 +32,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 function AddPlayground() {
-  const router = useRouter();
   const utils = api.useUtils();
   const form = useForm<z.infer<typeof createPlaygroundSchema>>({
     resolver: zodResolver(createPlaygroundSchema),
@@ -50,7 +49,6 @@ function AddPlayground() {
       onSuccess: (data) => {
         toast.success("Playground created successfully");
         utils.playgroundRouter.getAllPlaygrounds.invalidate();
-        router.push(`/dashboard/playground/${data?.id}`);
       },
       onError: () => {
         toast.error("Error creating playground");

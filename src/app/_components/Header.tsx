@@ -9,7 +9,7 @@ import { MaxWidthWrapper } from "./MaxwidthWrapper";
 
 function Header() {
   return (
-    <div className="border-b border-border">
+    <div className="border-b border-border bg-background">
       <MaxWidthWrapper className="hidden h-14 items-center justify-between p-3 md:flex">
         <div className="flex items-center gap-3">
           <Link

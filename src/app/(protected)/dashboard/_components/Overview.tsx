@@ -25,7 +25,7 @@ function OverviewCards() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start">
+    <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
       <Card className="flex w-full flex-col justify-center sm:w-96">
         <CardHeader>
           <CardTitle>Playgrounds</CardTitle>
