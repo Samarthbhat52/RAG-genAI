@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { playground } from "@/server/db/schema";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const playgroundRouter = createTRPCRouter({

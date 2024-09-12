@@ -13,13 +13,28 @@ import {
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { Ghost, Plus, Trash } from "lucide-react";
+import { Ghost, Loader, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { playgroundSelect } from "@/server/db/schema";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
+  const utils = api.useUtils();
+
+  const { mutate, isPending } =
+    api.playgroundRouter.deletePlayground.useMutation({
+      onSuccess: () => {
+        toast.success("Playground deleted");
+        utils.playgroundRouter.getAllPlaygrounds.invalidate();
+        utils.filesRouter.getAllFilesCount.invalidate();
+      },
+      onError: () => {
+        toast.error("Error deleting playground");
+      },
+    });
+
   return (
     <Card className="w-full md:w-96">
       <Link href={`/dashboard/playground/${data.id}`}>
@@ -44,13 +59,18 @@ const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
           <p>{format(data.createdAt, "LLL yyyy")}</p>
         </div>
         <div>
-          {/* // TODO: Add delete functionality  */}
           <Button
             variant={"destructive"}
             size={"sm"}
             className="flex items-center gap-1"
+            onClick={() => mutate({ id: data.id })}
           >
-            <Trash size={15} /> delete
+            {isPending ? (
+              <Loader size={15} className="animate-spin" />
+            ) : (
+              <Trash size={15} />
+            )}
+            delete
           </Button>
         </div>
       </CardFooter>
@@ -62,7 +82,7 @@ function AllPlaygrounds() {
   const { data, isLoading } = api.playgroundRouter.getAllPlaygrounds.useQuery();
 
   if (isLoading) {
-    return <Loader />;
+    return <SkeletonLoader />;
   }
 
   if (!data?.length) {
@@ -86,7 +106,7 @@ function AllPlaygrounds() {
   );
 }
 
-const Loader = () => {
+const SkeletonLoader = () => {
   return (
     <div className="flex gap-2">
       <Skeleton className="h-48 w-96" />
