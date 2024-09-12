@@ -18,7 +18,7 @@ async function Playground({ params }: { params: { id: string } }) {
 
   if (!playgroundExists) return redirect("/dashboard");
 
-  await api.filesRouter.getFiles.prefetch({ playgroundId: params.id });
+  api.filesRouter.getFiles.prefetch({ playgroundId: params.id });
 
   return (
     <HydrateClient>

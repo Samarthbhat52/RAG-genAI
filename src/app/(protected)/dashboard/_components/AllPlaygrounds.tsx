@@ -14,18 +14,15 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { Plus, Trash } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { playgroundSelect } from "@/server/db/schema";
+import { format } from "date-fns";
 
-interface CardComponentProps {
-  title: string;
-  description?: string | null;
-  id: string;
-}
-const CardComponent = (props: CardComponentProps) => {
+const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
   return (
-    <Card className="w-full md:w-96">
-      <Link href={`/dashboard/playground/${props.id}`}>
+    <Card className="w-full md:w-96" key={data.id}>
+      <Link href={`/dashboard/playground/${data.id}`}>
         <div className="relative aspect-video h-24 w-full">
           <Image
             src={"https://images.unsplash.com/photo-1626482973710-aebe8e9003f1"}
@@ -36,17 +33,18 @@ const CardComponent = (props: CardComponentProps) => {
         </div>
 
         <CardHeader>
-          <CardTitle>{props.title}</CardTitle>
-          <CardDescription>{props.description}</CardDescription>
+          <CardTitle>{data.name}</CardTitle>
+          <CardDescription>{data.description}</CardDescription>
         </CardHeader>
         <CardContent></CardContent>
       </Link>
       <CardFooter className="flex justify-between border-t border-border px-4 py-2">
         <div className={cn("flex items-center gap-2")}>
           <Plus size={15} />
-          <p>Sep 2024</p>
+          <p>{format(data.createdAt, "LLL yyyy")}</p>
         </div>
         <div>
+          {/* // TODO: Add delete functionality  */}
           <Button
             variant={"destructive"}
             size={"sm"}
@@ -69,14 +67,7 @@ function AllPlaygrounds() {
 
   return (
     <div className="flex flex-col gap-2 md:flex-row md:flex-wrap">
-      {data?.map((playground) => (
-        <CardComponent
-          key={playground.id}
-          title={playground.name}
-          description={playground.description}
-          id={playground.id}
-        />
-      ))}
+      {data?.map((playground) => <CardComponent data={playground} />)}
     </div>
   );
 }

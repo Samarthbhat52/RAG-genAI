@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { playfair } from "@/lib/fonts";
 import AddPlayground from "./_components/AddPlayground";
 import AllPlaygrounds from "./_components/AllPlaygrounds";
-import { unsplash } from "@/lib/unsplash";
 const MobileHeader = lazy(() => import("@/app/_components/MobileHeader"));
 
 async function Dashboard() {
