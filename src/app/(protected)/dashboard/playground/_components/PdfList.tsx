@@ -35,6 +35,7 @@ function PDFList() {
               buttonVariants({ variant: "secondary", size: "sm" }),
               "flex gap-2",
             )}
+            // TODO: Add files limit dynamically
             disabled={isLoading || pdfCount?.[0]?.count === 15}
           >
             Upload

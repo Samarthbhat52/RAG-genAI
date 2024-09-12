@@ -12,6 +12,7 @@ import {
 import { api } from "@/trpc/react";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CircleAlert } from "lucide-react";
 
 function OverviewCards() {
   const { data: playgrounds, isLoading: playgroundsLoading } =
@@ -38,9 +39,17 @@ function OverviewCards() {
           <Progress value={playgrounds && (playgrounds.length / 5) * 100} />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            Upgrade your account to increase the limit
-          </p>
+          {/* //TODO: Add playgrounds count dynamically */}
+          {playgrounds && playgrounds.length >= 5 ? (
+            <p className="flex items-center gap-1 text-destructive">
+              <CircleAlert size={15} />
+              playground limit reached
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Upgrade your account to increase the limit
+            </p>
+          )}
         </CardFooter>
       </Card>
 
@@ -56,9 +65,16 @@ function OverviewCards() {
           <Progress value={files ? (files[0]?.count! / 15) * 100 : 0} />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            Upgrade your account to increase file capacity
-          </p>
+          {files && files[0]?.count! >= 15 ? (
+            <p className="flex items-center gap-1 text-destructive">
+              <CircleAlert size={15} />
+              file limit reached
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Upgrade your account to increase the limit
+            </p>
+          )}
         </CardFooter>
       </Card>
     </div>
