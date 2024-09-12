@@ -23,6 +23,8 @@ function PDFList() {
     playgroundId: id,
   });
 
+  const { data: pdfCount } = api.filesRouter.getAllFilesCount.useQuery();
+
   return (
     <div className="flex flex-1 flex-col gap-3 rounded-md border border-border p-4">
       <div className="flex items-center justify-between">
@@ -33,7 +35,7 @@ function PDFList() {
               buttonVariants({ variant: "secondary", size: "sm" }),
               "flex gap-2",
             )}
-            disabled={isLoading}
+            disabled={isLoading || pdfCount?.[0]?.count === 15}
           >
             Upload
             <FilePlus size={15} />
@@ -66,7 +68,9 @@ function PDFList() {
               key={pdf.id}
             >
               <FaRegFilePdf size={23} />
-              <span className="font-medium">{pdf.name}</span>
+              <span className="truncate text-ellipsis font-medium">
+                {pdf.name}
+              </span>
             </div>
           ))}
           <ScrollBar orientation="vertical" />

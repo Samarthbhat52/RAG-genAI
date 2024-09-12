@@ -1,0 +1,1 @@
+ALTER TABLE "RAG-genAI_playground" ADD COLUMN "image" varchar;

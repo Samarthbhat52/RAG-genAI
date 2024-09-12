@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { playground } from "@/server/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { unsplash } from "@/lib/unsplash";
 
 export const playgroundRouter = createTRPCRouter({
   getAllPlaygrounds: protectedProcedure.query(async ({ ctx }) => {
@@ -32,12 +33,19 @@ export const playgroundRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const image = await unsplash.photos.getRandom({
+        count: 1,
+      });
+
+      const newImage = image.response as Array<Record<string, any>>;
+
       const createdPlayground = await ctx.db
         .insert(playground)
         .values({
           name: input.name,
           description: input.description,
           userId: ctx.session.user.id,
+          image: newImage[0]?.urls.regular ?? "",
         })
         .returning();
 

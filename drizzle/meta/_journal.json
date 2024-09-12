@@ -22,6 +22,13 @@
       "when": 1725985383625,
       "tag": "0002_regular_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1726142600271,
+      "tag": "0003_cooing_celestials",
+      "breakpoints": true
     }
   ]
 }

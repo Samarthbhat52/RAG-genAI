@@ -131,6 +131,7 @@ export const playground = createTable("playground", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name").notNull(),
+  image: varchar("image"),
   description: text("description"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

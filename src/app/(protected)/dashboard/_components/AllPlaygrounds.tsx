@@ -40,7 +40,10 @@ const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
       <Link href={`/dashboard/playground/${data.id}`}>
         <div className="relative aspect-video h-24 w-full">
           <Image
-            src={"https://images.unsplash.com/photo-1626482973710-aebe8e9003f1"}
+            src={
+              data.image ??
+              "https://images.unsplash.com/photo-1725988208207-a15e5f5eb5fb"
+            }
             className="h-10 w-full rounded-t-md object-cover"
             alt="Unsplash image"
             fill

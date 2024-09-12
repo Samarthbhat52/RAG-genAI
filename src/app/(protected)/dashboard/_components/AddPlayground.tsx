@@ -42,6 +42,9 @@ function AddPlayground() {
     },
   });
 
+  const { data: playgrounds } =
+    api.playgroundRouter.getAllPlaygrounds.useQuery();
+
   const { mutate, isPending } =
     api.playgroundRouter.createPlayground.useMutation({
       onSuccess: (data) => {
@@ -68,6 +71,8 @@ function AddPlayground() {
             size: "sm",
           }),
         )}
+        // TODO: Add a max number of playgrounds dynamically
+        disabled={playgrounds?.length === 5}
       >
         Create <PlusSquare size={15} />
       </DialogTrigger>
