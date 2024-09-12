@@ -26,7 +26,7 @@ function OverviewCards() {
 
   return (
     <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start">
-      <Card className="flex h-52 w-full flex-col justify-center sm:w-96">
+      <Card className="flex w-full flex-col justify-center sm:w-96">
         <CardHeader>
           <CardTitle>Playgrounds</CardTitle>
           <CardDescription>Your interactive AI workspaces</CardDescription>
@@ -46,7 +46,7 @@ function OverviewCards() {
         </CardFooter>
       </Card>
 
-      <Card className="flex h-52 w-full flex-col justify-center sm:w-96">
+      <Card className="flex w-full flex-col justify-center sm:w-96">
         <CardHeader>
           <CardTitle>Files</CardTitle>
           <CardDescription>Assets across all Playgrounds</CardDescription>
