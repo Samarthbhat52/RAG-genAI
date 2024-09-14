@@ -18,8 +18,6 @@ async function Playground({ params }: { params: { id: string } }) {
 
   if (!playgroundExists) return redirect("/dashboard");
 
-  api.filesRouter.getFiles.prefetch({ playgroundId: params.id });
-
   return (
     <HydrateClient>
       <MaxWidthWrapper className="flex w-full flex-col">

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Loader, PlusSquare } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,10 +28,10 @@ import { cn } from "@/lib/utils";
 import { createPlaygroundSchema } from "@/lib/schema";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 function AddPlayground() {
+  const [open, setOpen] = useState(false);
   const utils = api.useUtils();
   const form = useForm<z.infer<typeof createPlaygroundSchema>>({
     resolver: zodResolver(createPlaygroundSchema),
@@ -49,6 +49,7 @@ function AddPlayground() {
       onSuccess: (data) => {
         toast.success("Playground created successfully");
         utils.playgroundRouter.getAllPlaygrounds.invalidate();
+        setOpen(false);
       },
       onError: () => {
         toast.error("Error creating playground");
@@ -61,7 +62,7 @@ function AddPlayground() {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={cn(
           "flex items-center gap-2",
