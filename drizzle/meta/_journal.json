@@ -43,6 +43,13 @@
       "when": 1726155362030,
       "tag": "0005_red_talisman",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1726473632049,
+      "tag": "0006_lush_roughhouse",
+      "breakpoints": true
     }
   ]
 }

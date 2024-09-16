@@ -1,13 +1,14 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { file, playground } from "@/server/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { file, message, playground } from "@/server/db/schema";
+import { and, desc, eq, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
 import { UTApi } from "uploadthing/server";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { qdrantClient } from "@/lib/qdrant";
+import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 
 export const playgroundRouter = createTRPCRouter({
   getAllPlaygrounds: protectedProcedure.query(async ({ ctx }) => {
@@ -26,6 +27,42 @@ export const playgroundRouter = createTRPCRouter({
       });
 
       return playgroundExists ?? null;
+    }),
+  getPlaygroundMessages: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+        playgroundId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor, playgroundId } = input;
+      const playgroundExists = await ctx.db.query.playground.findFirst({
+        where: eq(playground.id, playgroundId),
+      });
+
+      if (!playgroundExists) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const messages = await ctx.db
+        .select()
+        .from(message)
+        .limit(limit ?? INFINITE_QUERY_LIMIT)
+        .where(
+          and(
+            eq(message.playgroundId, playgroundId),
+            cursor ? gt(message.id, cursor) : undefined,
+          ),
+        )
+        .orderBy(desc(message.createdAt));
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (messages.length > limit!) {
+        const nextItem = messages.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      return { messages, nextCursor };
     }),
 
   createPlayground: protectedProcedure

@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgEnum,
@@ -160,3 +161,25 @@ export const file = createTable("file", {
 
 export const fileSelect = file.$inferSelect;
 export const fileInsert = file.$inferInsert;
+
+export const message = createTable("message", {
+  id: varchar("id")
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  playgroundId: varchar("playground_id")
+    .notNull()
+    .references(() => playground.id, { onDelete: "cascade" }),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  message: varchar("message").notNull().default(""),
+  isUserMessage: boolean("is_user_message").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type messageSelect = typeof message.$inferSelect;
+type omitMessage = Omit<messageSelect, "message">;
+type ExtendedText = { message: string | JSX.Element };
+export type ExtendedMessage = omitMessage & ExtendedText;

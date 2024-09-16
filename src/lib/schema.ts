@@ -14,3 +14,8 @@ export const createPlaygroundSchema = z.object({
   }),
   description: z.string().max(100).optional(),
 });
+
+export const SendMessageSchema = z.object({
+  playgroundId: z.string(),
+  message: z.string(),
+});
