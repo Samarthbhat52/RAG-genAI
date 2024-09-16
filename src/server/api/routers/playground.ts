@@ -6,6 +6,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
 import { UTApi } from "uploadthing/server";
+import { QdrantVectorStore } from "@langchain/qdrant";
+import { qdrantClient } from "@/lib/qdrant";
 
 export const playgroundRouter = createTRPCRouter({
   getAllPlaygrounds: protectedProcedure.query(async ({ ctx }) => {
@@ -97,5 +99,15 @@ export const playgroundRouter = createTRPCRouter({
             eq(playground.id, input.id),
           ),
         );
+
+      try {
+        await qdrantClient.deleteCollection(`"${input.id}"`);
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          message: "Error while deleting playground",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
     }),
 });

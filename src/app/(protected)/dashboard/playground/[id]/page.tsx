@@ -1,8 +1,7 @@
 import ModelSettings from "../_components/ModelSettings";
 import PDFList from "../_components/PdfList";
 import ChatArea from "../_components/ChatArea";
-import ChatInput from "../_components/ChatInput";
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { playground } from "@/server/db/schema";
@@ -27,10 +26,7 @@ async function Playground({ params }: { params: { id: string } }) {
             <ModelSettings />
             <PDFList />
           </div>
-          <div className="flex w-full flex-col justify-between rounded-md border border-border bg-card p-4 md:w-3/4">
-            <ChatArea />
-            <ChatInput />
-          </div>
+          <ChatArea />
         </div>
       </MaxWidthWrapper>
     </HydrateClient>

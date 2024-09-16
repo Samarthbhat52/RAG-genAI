@@ -30,6 +30,21 @@ export const filesRouter = createTRPCRouter({
       return files ?? [];
     }),
 
+  getFileUploadStatus: protectedProcedure
+    .input(z.object({ file_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const fileExists = await ctx.db.query.file.findFirst({
+        where: and(
+          eq(file.userId, ctx.session.user.id),
+          eq(file.key, input.file_id),
+        ),
+      });
+
+      if (!fileExists) return { status: "PENDING" as const };
+
+      return { status: fileExists.uploadStatus };
+    }),
+
   deleteFile: protectedProcedure
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {

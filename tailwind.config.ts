@@ -1,11 +1,17 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import { withUt } from "uploadthing/tw";
+import fluid, { extract, screens, fontSize } from "fluid-tailwind";
 
 export default withUt({
   darkMode: ["class"],
-  content: ["./src/**/*.{ts,tsx,mdx}"],
+  content: {
+    files: ["./src/**/*.{ts,tsx,mdx}"],
+    extract,
+  },
   theme: {
+    screens,
+    fontSize,
     extend: {
       fontFamily: {
         sans: [
@@ -63,5 +69,5 @@ export default withUt({
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), fluid],
 }) satisfies Config;

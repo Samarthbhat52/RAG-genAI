@@ -39,14 +39,6 @@ export const ourFileRouter = {
         throw new UploadThingError("Upload unsuccessful");
       }
 
-      await db.insert(fileTable).values({
-        userId: metadata.userId,
-        name: file.name,
-        key: file.key,
-        url: file.url,
-        playgroundId: metadata.playgroundId,
-      });
-
       // Create embeddings for the pdf
       try {
         const response = await fetch(file.url);
@@ -71,15 +63,23 @@ export const ourFileRouter = {
           },
         });
 
-        await db
-          .update(fileTable)
-          .set({ uploadStatus: "SUCCESS" })
-          .where(eq(fileTable.key, file.key));
+        await db.insert(fileTable).values({
+          userId: metadata.userId,
+          name: file.name,
+          key: file.key,
+          url: file.url,
+          uploadStatus: "SUCCESS",
+          playgroundId: metadata.playgroundId,
+        });
       } catch (error) {
-        await db
-          .update(fileTable)
-          .set({ uploadStatus: "FAILED" })
-          .where(eq(fileTable.key, file.key));
+        await db.insert(fileTable).values({
+          userId: metadata.userId,
+          name: file.name,
+          key: file.key,
+          url: file.url,
+          uploadStatus: "FAILED",
+          playgroundId: metadata.playgroundId,
+        });
       }
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback

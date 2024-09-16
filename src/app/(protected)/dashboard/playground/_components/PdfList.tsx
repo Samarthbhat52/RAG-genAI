@@ -8,16 +8,14 @@ import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { UploadDropzone } from "@/lib/uploadthing";
 import { useParams } from "next/navigation";
-import { toast } from "sonner";
+import UploadDropzone from "./Dropzone";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 
 function PDFList() {
   const { id } = useParams<{ id: string }>();
   const [open, setOpen] = React.useState(false);
-  const utils = api.useUtils();
 
   const { data: pdfList, isLoading } = api.filesRouter.getFiles.useQuery({
     playgroundId: id,
@@ -42,19 +40,7 @@ function PDFList() {
             <FilePlus size={15} />
           </DialogTrigger>
           <DialogContent>
-            <UploadDropzone
-              input={{ playgroundId: id }}
-              endpoint="pdfUploader"
-              onClientUploadComplete={() => {
-                setOpen(false);
-                utils.filesRouter.getAllFilesCount.invalidate();
-                utils.filesRouter.getFiles.invalidate({ playgroundId: id });
-                toast.success("File(s) uploaded successfully");
-              }}
-              onUploadError={(error: Error) => {
-                toast.error(error.message);
-              }}
-            />
+            <UploadDropzone playgroundId={id} setDialogOpen={setOpen} />
           </DialogContent>
         </Dialog>
       </div>
