@@ -6,7 +6,13 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FilePlus, Ghost } from "lucide-react";
 import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogOverlay,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import UploadDropzone from "./Dropzone";
@@ -27,6 +33,7 @@ function PDFList() {
     <div className="flex flex-1 flex-col gap-3 rounded-md border border-border p-4">
       <div className="flex items-center justify-between">
         <Label className="text-md font-semibold">Uploaded documents</Label>
+
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             className={cn(
@@ -39,7 +46,11 @@ function PDFList() {
             Upload
             <FilePlus size={15} />
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent
+            onInteractOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <UploadDropzone playgroundId={id} setDialogOpen={setOpen} />
           </DialogContent>
         </Dialog>

@@ -10,7 +10,6 @@ const MobileHeader = lazy(() => import("@/app/_components/MobileHeader"));
 
 async function Dashboard() {
   await api.filesRouter.getAllFilesCount.prefetch();
-  await api.playgroundRouter.getAllPlaygrounds.prefetch();
 
   return (
     <HydrateClient>
