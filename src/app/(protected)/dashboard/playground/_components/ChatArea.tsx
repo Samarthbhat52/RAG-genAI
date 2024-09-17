@@ -15,7 +15,7 @@ function ChatArea() {
 
   return (
     <ChatContextProvider playgroundId={id}>
-      <div className="flex w-full flex-col justify-between rounded-md border border-border bg-card p-4 md:w-3/4">
+      <div className="flex w-full flex-col justify-between gap-4 rounded-md border border-border bg-card p-4 md:w-3/4">
         <Messages playgroundId={id} />
         <ChatInput disabled={isLoading || !pdfList?.length} />
       </div>

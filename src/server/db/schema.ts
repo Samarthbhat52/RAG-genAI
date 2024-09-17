@@ -180,6 +180,3 @@ export const message = createTable("message", {
 });
 
 export type messageSelect = typeof message.$inferSelect;
-type omitMessage = Omit<messageSelect, "message">;
-type ExtendedText = { message: string | JSX.Element };
-export type ExtendedMessage = omitMessage & ExtendedText;

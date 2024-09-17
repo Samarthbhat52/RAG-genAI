@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { file, message, playground } from "@/server/db/schema";
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, asc, desc, eq, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
 import { UTApi } from "uploadthing/server";
@@ -54,7 +54,7 @@ export const playgroundRouter = createTRPCRouter({
             cursor ? gt(message.id, cursor) : undefined,
           ),
         )
-        .orderBy(desc(message.createdAt));
+        .orderBy(asc(message.createdAt));
 
       let nextCursor: typeof cursor | undefined = undefined;
       if (messages.length > limit!) {

@@ -48,6 +48,8 @@ export const POST = async (request: NextRequest) => {
 
   const results = await store.similaritySearch(message, 4);
 
+  console.log("🟢 Results: ", results);
+
   const previousMessage = await db.query.message.findMany({
     where: eq(MessageTable.playgroundId, playgroundId),
     orderBy: asc(MessageTable.createdAt),

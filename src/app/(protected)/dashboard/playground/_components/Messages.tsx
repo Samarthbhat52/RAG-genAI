@@ -1,22 +1,11 @@
 "use client";
 
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
-import { ExtendedMessage } from "@/server/db/schema";
 import { api } from "@/trpc/react";
-import { Loader } from "lucide-react";
 import React from "react";
-
-interface MessageProps {
-  message: ExtendedMessage;
-  isNextMessageBySamePerson: boolean;
-}
-
-export const Message = ({
-  message,
-  isNextMessageBySamePerson,
-}: MessageProps) => {
-  return <div>{message.message}</div>;
-};
+import { Message } from "./Message";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MessagesProps {
   playgroundId: string;
@@ -36,57 +25,61 @@ function Messages({ playgroundId }: MessagesProps) {
 
   const messages = data?.pages.flatMap((page) => page.messages);
 
-  const loadingMessage = {
-    createdAt: new Date(),
-    id: "loading-message",
-    isUserMessage: false,
-    message: (
-      <span className="flex h-full items-center justify-center">
-        <Loader size={15} className="animate-spin" />
-      </span>
-    ),
-    playgroundId: playgroundId,
-    updatedAt: new Date(),
-    userId: "loading-user",
-  };
-
-  const combinedMessages = [
-    ...(true ? [loadingMessage] : []),
-    ...(messages ?? []),
-  ];
-
   return (
-    <div className="flex flex-1 flex-col-reverse">
-      {combinedMessages && combinedMessages.length ? (
-        combinedMessages.map((message, i) => {
+    <ScrollArea className="max-h-[calc(100vh-3.5rem-15rem)] p-2">
+      {messages && messages.length ? (
+        messages.map((msg, i) => {
           const isNextMessageBySamePerson =
-            combinedMessages[i - 1]?.isUserMessage ===
-            combinedMessages[i]?.isUserMessage;
+            messages[i - 1]?.isUserMessage === messages[i]?.isUserMessage;
 
-          if (i == combinedMessages.length - 1) {
+          if (i == messages.length - 1) {
             return (
               <Message
-                key={message.id}
-                message={message}
+                key={msg.id}
+                message={msg}
                 isNextMessageBySamePerson={isNextMessageBySamePerson}
               />
             );
           } else
             return (
               <Message
-                key={message.id}
-                message={message}
+                key={msg.id}
+                message={msg}
                 isNextMessageBySamePerson={isNextMessageBySamePerson}
               />
             );
         })
       ) : isLoading ? (
-        <div></div>
+        <SkeletonLoader />
       ) : (
         <div></div>
       )}
-    </div>
+    </ScrollArea>
   );
 }
 
+const SkeletonLoader = () => {
+  return (
+    <div className="flex flex-col gap-4">
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+};
+
 export default Messages;
+
+// const loadingMessage = {
+//   createdAt: new Date(),
+//   id: "loading-message",
+//   isUserMessage: false,
+//   message: (
+//     <span className="flex h-full items-center justify-center">
+//       <Loader size={15} className="animate-spin" />
+//     </span>
+//   ),
+//   playgroundId: playgroundId,
+//   updatedAt: new Date(),
+//   userId: "loading-user",
+// };
