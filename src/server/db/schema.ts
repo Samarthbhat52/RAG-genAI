@@ -10,8 +10,10 @@ import {
   text,
   timestamp,
   varchar,
+  vector,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { z } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -112,6 +114,36 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+// Embeddings
+
+export const embeddings = createTable(
+  "embeddings",
+  {
+    id: serial("id").notNull().primaryKey(),
+    vectors: vector("vectors", { dimensions: 768 }).notNull(),
+    content: text("content").notNull(),
+    playgroundId: varchar("playground_id", { length: 255 })
+      .notNull()
+      .references(() => playground.id, { onDelete: "cascade" }),
+    fileId: varchar("file_id", { length: 255 })
+      .notNull()
+      .references(() => file.id, {
+        onDelete: "cascade",
+      }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    vectorIndex: index("embeddings_playground_id_idx").using(
+      "hnsw",
+      table.vectors.op("vector_cosine_ops"),
+    ),
+  }),
+);
+
+export const insertEmbeddings = embeddings.$inferInsert;
+export const selectEmbeddings = embeddings.$inferSelect;
 
 // Files model
 export const UploadStatus = pgEnum("status", [

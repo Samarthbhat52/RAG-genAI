@@ -28,7 +28,7 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: z.string(),
     UNSPLASH_API_KEY: z.string(),
     UNSPLASH_SECRET: z.string(),
-    GOOGLE_GEMINI_API: z.string(),
+    GOOGLE_API_KEY: z.string(),
   },
 
   /**
@@ -55,7 +55,7 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY,
     UNSPLASH_SECRET: process.env.UNSPLASH_SECRET,
-    GOOGLE_GEMINI_API: process.env.GOOGLE_GEMINI_API,
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

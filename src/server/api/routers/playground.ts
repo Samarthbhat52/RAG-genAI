@@ -2,11 +2,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { file, message, playground } from "@/server/db/schema";
-import { and, asc, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
 import { UTApi } from "uploadthing/server";
-import { QdrantVectorStore } from "@langchain/qdrant";
 import { qdrantClient } from "@/lib/qdrant";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 

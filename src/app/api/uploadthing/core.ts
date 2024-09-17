@@ -39,6 +39,18 @@ export const ourFileRouter = {
         throw new UploadThingError("Upload unsuccessful");
       }
 
+      const uploadedFile = await db
+        .insert(fileTable)
+        .values({
+          userId: metadata.userId,
+          name: file.name,
+          key: file.key,
+          url: file.url,
+          uploadStatus: "PENDING",
+          playgroundId: metadata.playgroundId,
+        })
+        .returning({ id: fileTable.id });
+
       // Create embeddings for the pdf
       try {
         const response = await fetch(file.url);

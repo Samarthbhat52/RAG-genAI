@@ -50,6 +50,20 @@
       "when": 1726473632049,
       "tag": "0006_lush_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1726561127318,
+      "tag": "0007_superb_pet_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1726569672525,
+      "tag": "0008_magical_red_ghost",
+      "breakpoints": true
     }
   ]
 }

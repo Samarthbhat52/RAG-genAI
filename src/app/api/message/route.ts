@@ -1,4 +1,4 @@
-import { gemini } from "@/lib/openai";
+import { gemini } from "@/lib/gemini";
 import { streamText } from "ai";
 import { SendMessageSchema } from "@/lib/schema";
 import { auth } from "@/server/auth";

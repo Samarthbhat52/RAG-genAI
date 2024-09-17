@@ -1,0 +1,1 @@
+ALTER TABLE "RAG-genAI_embeddings" RENAME COLUMN "metadata" TO "content";
