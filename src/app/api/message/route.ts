@@ -48,8 +48,6 @@ export const POST = async (request: NextRequest) => {
 
   const results = await store.similaritySearch(message, 4);
 
-  console.log("🟢 Results: ", results);
-
   const previousMessage = await db.query.message.findMany({
     where: eq(MessageTable.playgroundId, playgroundId),
     orderBy: asc(MessageTable.createdAt),
@@ -67,11 +65,6 @@ export const POST = async (request: NextRequest) => {
       model: gemini("gemini-1.5-flash"),
       temperature: 0,
       messages: [
-        {
-          role: "system",
-          content:
-            "Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format.",
-        },
         {
           role: "user",
           content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. 

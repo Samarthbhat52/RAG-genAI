@@ -54,7 +54,7 @@ export const playgroundRouter = createTRPCRouter({
             cursor ? gt(message.id, cursor) : undefined,
           ),
         )
-        .orderBy(asc(message.createdAt));
+        .orderBy(desc(message.createdAt));
 
       let nextCursor: typeof cursor | undefined = undefined;
       if (messages.length > limit!) {

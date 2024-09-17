@@ -5,7 +5,6 @@ import { api } from "@/trpc/react";
 import React from "react";
 import { Message } from "./Message";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MessagesProps {
   playgroundId: string;
@@ -26,7 +25,7 @@ function Messages({ playgroundId }: MessagesProps) {
   const messages = data?.pages.flatMap((page) => page.messages);
 
   return (
-    <ScrollArea className="max-h-[calc(100vh-3.5rem-15rem)] p-2">
+    <div className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch flex max-h-[calc(100vh-3.5rem-15rem)] flex-1 flex-col-reverse gap-4 overflow-y-auto border-zinc-200 p-3">
       {messages && messages.length ? (
         messages.map((msg, i) => {
           const isNextMessageBySamePerson =
@@ -54,7 +53,7 @@ function Messages({ playgroundId }: MessagesProps) {
       ) : (
         <div></div>
       )}
-    </ScrollArea>
+    </div>
   );
 }
 
