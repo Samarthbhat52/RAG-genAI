@@ -1,25 +1,22 @@
 "use client";
 
-import { messageSelect } from "@/server/db/schema";
 import { api } from "@/trpc/react";
-import { Message, useChat } from "ai/react";
-import React, { useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import React, { createContext, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type StreamResponse = {
-  callAI: () => void;
-  input: string;
+  addMessage: () => void;
+  message: string;
   handleInputChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading: boolean;
-  messages: Message[];
 };
 
-export const ChatContext = React.createContext<StreamResponse>({
-  callAI: () => {},
-  input: "",
+export const ChatContext = createContext<StreamResponse>({
+  addMessage: () => {},
+  message: "",
   handleInputChange: () => {},
   isLoading: false,
-  messages: [],
 });
 
 interface ChatContextProviderProps {
@@ -31,114 +28,186 @@ export const ChatContextProvider = ({
   playgroundId,
   children,
 }: ChatContextProviderProps) => {
-  const utils = api.useUtils();
-  const backupMessage = useRef("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { mutate } = api.playgroundRouter.AddPlaygroundMessage.useMutation({
-    onMutate: async (data) => {
-      await utils.playgroundRouter.getPlaygroundMessages.cancel({
-        playgroundId,
+  const utils = api.useUtils();
+
+  const backupMessage = useRef("");
+
+  const { mutate: sendMessage } = useMutation({
+    mutationFn: async ({ message }: { message: string }) => {
+      const response = await fetch("/api/message", {
+        method: "POST",
+        body: JSON.stringify({
+          playgroundId,
+          message,
+        }),
       });
 
-      // Optimistically update to the new value
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      return response.body;
+    },
+    onMutate: async ({ message }) => {
+      backupMessage.current = message;
+      setMessage("");
+
+      // step 1
+      await utils.playgroundRouter.getPlaygroundMessages.cancel();
+
+      // step 2
+      const previousMessages =
+        utils.playgroundRouter.getPlaygroundMessages.getInfiniteData();
+
+      // step 3
       utils.playgroundRouter.getPlaygroundMessages.setInfiniteData(
         { playgroundId },
         (old) => {
           if (!old) {
-            return { pages: [], pageParams: [] };
+            return {
+              pages: [],
+              pageParams: [],
+            };
           }
-          const newMessage = old.pages.map(
-            (oldPage: {
-              messages: messageSelect[];
-              nextCursor: string | undefined;
-            }) => ({
-              ...oldPage,
-              messages: [
-                {
-                  createdAt: new Date(),
-                  message: data.message,
-                  id: Math.random().toString(),
-                  isUserMessage: data.role === "assistant" ? false : true,
-                  playgroundId: playgroundId,
-                  updatedAt: new Date(),
-                  userId: "loading-user",
-                },
-                ...oldPage.messages,
-              ],
-            }),
-          );
+
+          let newPages = [...old.pages];
+
+          let latestPage = newPages[0]!;
+
+          latestPage.messages = [
+            {
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              id: crypto.randomUUID(),
+              message: message,
+              isUserMessage: true,
+              playgroundId,
+              userId: crypto.randomUUID(),
+            },
+            ...latestPage.messages,
+          ];
+
+          newPages[0] = latestPage;
+
           return {
             ...old,
-            pages: newMessage,
+            pages: newPages,
           };
         },
       );
-    },
-    onError: async () => {
-      setMessages([]);
-      setInput(backupMessage.current);
-    },
-  });
+      setIsLoading(true);
 
-  const {
-    input,
-    setInput,
-    messages,
-    setMessages,
-    handleInputChange,
-    handleSubmit,
-  } = useChat({
-    api: "/api/message",
-    onError: async () => {
-      setInput(backupMessage.current);
-      setMessages([]);
+      return {
+        previousMessages:
+          previousMessages?.pages.flatMap((page) => page.messages) ?? [],
+      };
+    },
+    onSuccess: async (stream) => {
+      setIsLoading(false);
+
+      if (!stream) {
+        return toast("There was a problem sending this message");
+      }
+
+      const reader = stream.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      // accumulated response
+      let accResponse = "";
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+
+        accResponse += chunkValue;
+
+        // append chunk to the actual message
+        utils.playgroundRouter.getPlaygroundMessages.setInfiniteData(
+          { playgroundId },
+          (old) => {
+            if (!old) return { pages: [], pageParams: [] };
+
+            let isAiResponseCreated = old.pages.some((page) =>
+              page.messages.some((message) => message.id === "ai-response"),
+            );
+
+            let updatedPages = old.pages.map((page) => {
+              if (page === old.pages[0]) {
+                let updatedMessages;
+
+                if (!isAiResponseCreated) {
+                  updatedMessages = [
+                    {
+                      createdAt: new Date(),
+                      updatedAt: new Date(),
+                      id: "ai-response",
+                      message: accResponse,
+                      isUserMessage: false,
+                      userId: crypto.randomUUID(),
+                      playgroundId,
+                    },
+                    ...page.messages,
+                  ];
+                } else {
+                  updatedMessages = page.messages.map((message) => {
+                    if (message.id === "ai-response") {
+                      return {
+                        ...message,
+                        text: accResponse,
+                      };
+                    }
+                    return message;
+                  });
+                }
+
+                return {
+                  ...page,
+                  messages: updatedMessages,
+                };
+              }
+
+              return page;
+            });
+
+            return { ...old, pages: updatedPages };
+          },
+        );
+      }
+    },
+    onError: (_, __, context) => {
+      setMessage(backupMessage.current);
+      utils.playgroundRouter.getPlaygroundMessages.setData(
+        { playgroundId },
+        { messages: context?.previousMessages ?? [], nextCursor: undefined },
+      );
+    },
+    onSettled: async () => {
+      setIsLoading(false);
+
       await utils.playgroundRouter.getPlaygroundMessages.invalidate({
         playgroundId,
       });
-
-      toast.error("Something went wrong. Please try again later");
-    },
-    onFinish: async ({ content }) => {
-      setMessages([]);
-      mutate(
-        {
-          playgroundId,
-          message: content,
-          role: "assistant",
-        },
-        {
-          onSuccess: async () => {
-            await utils.playgroundRouter.getPlaygroundMessages.invalidate({
-              playgroundId,
-            });
-          },
-        },
-      );
     },
   });
 
-  const callAI = async () => {
-    setIsLoading(true);
-    backupMessage.current = input;
-
-    mutate({
-      playgroundId,
-      message: input,
-      role: "user",
-    });
-
-    handleSubmit();
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
   };
+
+  const addMessage = () => sendMessage({ message });
 
   return (
     <ChatContext.Provider
       value={{
-        callAI,
-        input,
+        addMessage,
+        message,
         handleInputChange,
         isLoading,
-        messages,
       }}
     >
       {children}

@@ -6,13 +6,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FilePlus, Ghost } from "lucide-react";
 import React from "react";
 import { FaRegFilePdf } from "react-icons/fa6";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogOverlay,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import UploadDropzone from "./Dropzone";

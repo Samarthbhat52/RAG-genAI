@@ -211,4 +211,10 @@ export const message = createTable("message", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export type messageSelect = typeof message.$inferSelect;
+type messageSelect = typeof message.$inferSelect;
+type OmitText = Omit<messageSelect, "message">;
+type ModifiedMessage = {
+  message: string | JSX.Element;
+};
+
+export type ExtendedMessage = OmitText & ModifiedMessage;

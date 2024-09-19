@@ -1,4 +1,4 @@
-import { number, z } from "zod";
+import { z } from "zod";
 
 export const ModelSettingsSchema = z.object({
   model: z.string(),
@@ -16,8 +16,8 @@ export const createPlaygroundSchema = z.object({
 });
 
 export const SendMessageSchema = z.object({
-  role: z.string(),
-  content: z.string(),
+  playgroundId: z.string(),
+  message: z.string(),
 });
 
 export const insertEmbeddingsSchema = z.object({

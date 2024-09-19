@@ -1,12 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { file, message, messageSelect, playground } from "@/server/db/schema";
+import { file, message, ExtendedMessage, playground } from "@/server/db/schema";
 import { and, desc, eq, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
 import { UTApi } from "uploadthing/server";
-import { qdrantClient } from "@/lib/qdrant";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 
 export const playgroundRouter = createTRPCRouter({
@@ -44,10 +43,10 @@ export const playgroundRouter = createTRPCRouter({
 
       if (!playgroundExists) throw new TRPCError({ code: "NOT_FOUND" });
 
-      const messages: Array<messageSelect> = await ctx.db
+      const messages = await ctx.db
         .select()
         .from(message)
-        .limit(limit)
+        .limit(limit + 1)
         .where(
           and(
             eq(message.playgroundId, playgroundId),
@@ -63,24 +62,6 @@ export const playgroundRouter = createTRPCRouter({
       }
 
       return { messages, nextCursor };
-    }),
-
-  AddPlaygroundMessage: protectedProcedure
-    .input(
-      z.object({
-        playgroundId: z.string(),
-        message: z.string(),
-        role: z.enum(["user", "assistant"]),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(message).values({
-        message: input.message,
-        id: Math.random().toString(),
-        isUserMessage: input.role === "assistant" ? false : true,
-        playgroundId: input.playgroundId,
-        userId: ctx.session.user.id,
-      });
     }),
 
   createPlayground: protectedProcedure
@@ -154,15 +135,5 @@ export const playgroundRouter = createTRPCRouter({
             eq(playground.id, input.id),
           ),
         );
-
-      try {
-        await qdrantClient.deleteCollection(`"${input.id}"`);
-      } catch (error) {
-        console.error(error);
-        throw new TRPCError({
-          message: "Error while deleting playground",
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
     }),
 });

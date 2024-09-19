@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { CloudUpload, Cross, File, Loader, X } from "lucide-react";
+import { CloudUpload, File, Loader, X } from "lucide-react";
 import React, { useState } from "react";
 import Dropzone from "react-dropzone";
 import { toast } from "sonner";

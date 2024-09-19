@@ -4,6 +4,8 @@ import { auth } from "@/server/auth";
 import { findRelevantContent } from "@/lib/embeddings";
 import { NextRequest } from "next/server";
 import { SendMessageSchema } from "@/lib/schema";
+import { db } from "@/server/db";
+import { message as messageTable } from "@/server/db/schema";
 
 export const POST = async (request: NextRequest) => {
   const session = await auth();
@@ -12,10 +14,17 @@ export const POST = async (request: NextRequest) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { messages } = await request.json();
-  const { content } = SendMessageSchema.parse(messages[0]);
+  const body = await request.json();
+  const { playgroundId, message } = SendMessageSchema.parse(body);
 
-  const context = await findRelevantContent(content);
+  await db.insert(messageTable).values({
+    playgroundId,
+    userId: session.user.id,
+    message,
+    isUserMessage: true,
+  });
+
+  const context = await findRelevantContent(message);
 
   const googleResponse = await streamText({
     model: google("gemini-1.5-flash"),
@@ -25,13 +34,21 @@ export const POST = async (request: NextRequest) => {
       take liberties in answering and give a medium to lengthy reply to all queries unless speciefied otherwise.
       if no relevant information is found in the given context context,
       respond kindly that you are a chatbot specilising in reading Files and answering, general conversation is not possible.`,
-    prompt: ` QUERY: ${content}
-
+    prompt: ` QUERY: ${message},
       \n -------------------------- \n
 
       CONTEXT:
       ${context.map((c) => c.name)}`,
+
+    onFinish: async (response) => {
+      await db.insert(messageTable).values({
+        playgroundId,
+        userId: session.user.id,
+        message: response.text,
+        isUserMessage: false,
+      });
+    },
   });
 
-  return googleResponse.toDataStreamResponse();
+  return googleResponse.toTextStreamResponse();
 };
