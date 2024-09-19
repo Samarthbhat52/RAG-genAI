@@ -24,4 +24,4 @@ export const authRoutes = ["/auth"];
  *
  * @type {string}
  */
-export const apiAuthPrefix = ["/api/auth", "/api/uploadthing"];
+export const apiAuthPrefix = ["/api/auth", "/api/uploadthing", "/api/message"];

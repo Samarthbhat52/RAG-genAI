@@ -1,6 +1,6 @@
 "use client";
 
-import { DialogClose, DialogHeader } from "@/components/ui/dialog";
+import { DialogClose } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
@@ -19,15 +19,26 @@ function UploadDropzone({ playgroundId, setDialogOpen }: UploadDropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const utils = api.useUtils();
 
+  const { mutate: createEmbeddings, isPending: isEmbedding } =
+    api.embeddingRouter.createResource.useMutation({
+      onSuccess: () => {
+        toast.success("File(s) uploaded successfully");
+        setDialogOpen(false);
+        utils.filesRouter.getAllFilesCount.invalidate();
+        utils.filesRouter.getFiles.invalidate({ playgroundId });
+      },
+    });
+
   const { startUpload, isUploading } = useUploadThing("pdfUploader", {
     onUploadProgress: (progress) => {
       setUploadProgress(progress);
     },
-    onClientUploadComplete: () => {
-      toast.success("File(s) uploaded successfully");
-      setDialogOpen(false);
-      utils.filesRouter.getAllFilesCount.invalidate();
-      utils.filesRouter.getFiles.invalidate({ playgroundId });
+    onClientUploadComplete: (data) => {
+      createEmbeddings({
+        playgroundId: playgroundId,
+        fileURL: data[0]?.url!,
+        fileId: data[0]?.serverData.id!,
+      });
     },
     onUploadError(e) {
       toast.error(e.message);
@@ -77,7 +88,7 @@ function UploadDropzone({ playgroundId, setDialogOpen }: UploadDropzoneProps) {
                   </div>
                 ) : null}
 
-                {isUploading && uploadProgress < 100 ? (
+                {isUploading ? (
                   <div className="mx-auto w-full max-w-xs">
                     <Progress
                       className={cn(
@@ -87,7 +98,8 @@ function UploadDropzone({ playgroundId, setDialogOpen }: UploadDropzoneProps) {
                       value={uploadProgress}
                     />
                   </div>
-                ) : uploadProgress === 100 ? (
+                ) : null}
+                {isEmbedding ? (
                   <div className="flex flex-col items-center space-y-1">
                     <Loader size={15} className="animate-spin" />
                     <p className="text-xs text-muted-foreground">

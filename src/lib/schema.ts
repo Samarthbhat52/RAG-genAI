@@ -16,8 +16,8 @@ export const createPlaygroundSchema = z.object({
 });
 
 export const SendMessageSchema = z.object({
-  playgroundId: z.string(),
-  message: z.string(),
+  role: z.string(),
+  content: z.string(),
 });
 
 export const insertEmbeddingsSchema = z.object({

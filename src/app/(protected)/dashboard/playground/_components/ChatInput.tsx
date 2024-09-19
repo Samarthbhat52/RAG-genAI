@@ -17,7 +17,7 @@ interface ChatInputProps {
 }
 
 function ChatInput({ disabled = false }: ChatInputProps) {
-  const { addMessage, handleInputChange, isLoading, message } =
+  const { handleInputChange, isLoading, input, callAI } =
     useContext(ChatContext);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -34,11 +34,11 @@ function ChatInput({ disabled = false }: ChatInputProps) {
         className="h-1/3 min-h-14 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
         autoFocus
         onChange={handleInputChange}
-        value={message}
+        value={input}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            addMessage();
+            callAI();
             textAreaRef.current?.focus();
           }
         }}
@@ -61,8 +61,8 @@ function ChatInput({ disabled = false }: ChatInputProps) {
           size="sm"
           className="ml-auto gap-1.5"
           onClick={(e) => {
-            e.preventDefault;
-            addMessage();
+            e.preventDefault();
+            callAI();
             textAreaRef.current?.focus();
           }}
         >

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { file, message, playground } from "@/server/db/schema";
+import { file, message, messageSelect, playground } from "@/server/db/schema";
 import { and, desc, eq, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { unsplash } from "@/lib/unsplash";
@@ -27,10 +27,11 @@ export const playgroundRouter = createTRPCRouter({
 
       return playgroundExists ?? null;
     }),
+
   getPlaygroundMessages: protectedProcedure
     .input(
       z.object({
-        limit: z.number().min(1).max(100).nullish(),
+        limit: z.number().min(1).max(100).default(INFINITE_QUERY_LIMIT),
         cursor: z.string().nullish(),
         playgroundId: z.string(),
       }),
@@ -43,10 +44,10 @@ export const playgroundRouter = createTRPCRouter({
 
       if (!playgroundExists) throw new TRPCError({ code: "NOT_FOUND" });
 
-      const messages = await ctx.db
+      const messages: Array<messageSelect> = await ctx.db
         .select()
         .from(message)
-        .limit(limit ?? INFINITE_QUERY_LIMIT)
+        .limit(limit)
         .where(
           and(
             eq(message.playgroundId, playgroundId),
@@ -54,14 +55,32 @@ export const playgroundRouter = createTRPCRouter({
           ),
         )
         .orderBy(desc(message.createdAt));
-
       let nextCursor: typeof cursor | undefined = undefined;
-      if (messages.length > limit!) {
+
+      if (messages.length > limit) {
         const nextItem = messages.pop();
         nextCursor = nextItem?.id;
       }
 
       return { messages, nextCursor };
+    }),
+
+  AddPlaygroundMessage: protectedProcedure
+    .input(
+      z.object({
+        playgroundId: z.string(),
+        message: z.string(),
+        role: z.enum(["user", "assistant"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(message).values({
+        message: input.message,
+        id: Math.random().toString(),
+        isUserMessage: input.role === "assistant" ? false : true,
+        playgroundId: input.playgroundId,
+        userId: ctx.session.user.id,
+      });
     }),
 
   createPlayground: protectedProcedure

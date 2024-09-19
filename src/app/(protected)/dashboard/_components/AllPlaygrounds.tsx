@@ -36,8 +36,8 @@ const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
     });
 
   return (
-    <Card className="w-full md:w-96">
-      <Link href={`/dashboard/playground/${data.id}`}>
+    <Card className="flex w-full flex-col md:w-96">
+      <Link href={`/dashboard/playground/${data.id}`} className="flex-1">
         <div className="relative aspect-video h-24 w-full">
           <Image
             src={
@@ -54,7 +54,6 @@ const CardComponent = ({ data }: { data: typeof playgroundSelect }) => {
           <CardTitle>{data.name}</CardTitle>
           <CardDescription>{data.description}</CardDescription>
         </CardHeader>
-        <CardContent></CardContent>
       </Link>
       <CardFooter className="flex justify-between border-t border-border px-4 py-2">
         <div className={cn("flex items-center gap-2")}>

@@ -23,6 +23,7 @@ export const filesRouter = createTRPCRouter({
         where: and(
           eq(file.userId, ctx.session.user.id),
           eq(file.playgroundId, input.playgroundId),
+          eq(file.uploadStatus, "SUCCESS"),
         ),
         orderBy: desc(file.createdAt),
       });
