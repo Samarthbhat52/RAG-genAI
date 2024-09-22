@@ -66,7 +66,10 @@ function Messages({ playgroundId }: MessagesProps) {
         combinedMessages.map((message, i) => {
           if (i === combinedMessages.length - 1) {
             return <Message ref={ref} message={message} key={message.id} />;
-          } else return <Message message={message} key={message.id} />;
+          } else {
+            console.log("CALLED SECOND MESSAGE ELEMENT: ");
+            return <Message message={message} key={message.id} />;
+          }
         })
       ) : isLoading ? (
         <SkeletonLoader />

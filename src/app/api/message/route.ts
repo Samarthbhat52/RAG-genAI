@@ -24,11 +24,16 @@ export const POST = async (request: NextRequest) => {
     isUserMessage: true,
   });
 
-  const context = await findRelevantContent(message);
+  const context = await findRelevantContent({
+    userQuery: message,
+    playgroundId,
+  });
 
   const googleResponse = await streamText({
     model: google("gemini-1.5-flash"),
-    temperature: 0.8,
+    temperature: 0.4,
+    topK: 4,
+    topP: 0.95,
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
       Only respond to questions using information from the given context.
       take liberties in answering and give a medium to lengthy reply to all queries unless speciefied otherwise.
@@ -50,5 +55,5 @@ export const POST = async (request: NextRequest) => {
     },
   });
 
-  return googleResponse.toTextStreamResponse();
+  return googleResponse.toDataStreamResponse();
 };

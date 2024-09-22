@@ -2,7 +2,7 @@ import { db } from "@/server/db";
 import { embeddings } from "@/server/db/schema";
 import { google } from "@ai-sdk/google";
 import { embed, embedMany } from "ai";
-import { cosineDistance, desc, sql, gt } from "drizzle-orm";
+import { cosineDistance, desc, sql, eq } from "drizzle-orm";
 
 const embeddingModel = google.embedding("text-embedding-004", {
   outputDimensionality: 768,
@@ -31,7 +31,15 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
   return embedding;
 };
 
-export const findRelevantContent = async (userQuery: string) => {
+interface FindRelevantContentProps {
+  userQuery: string;
+  playgroundId: string;
+}
+
+export const findRelevantContent = async ({
+  userQuery,
+  playgroundId,
+}: FindRelevantContentProps) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const similarity = sql<number>`1 - (${cosineDistance(
     embeddings.vectors,
@@ -40,6 +48,7 @@ export const findRelevantContent = async (userQuery: string) => {
   const similarGuides = await db
     .select({ name: embeddings.content, similarity })
     .from(embeddings)
+    .where(eq(embeddings.playgroundId, playgroundId))
     // .where(gt(similarity, 0.5))
     .orderBy((t) => desc(t.similarity))
     .limit(2);
