@@ -55,5 +55,5 @@ export const POST = async (request: NextRequest) => {
     },
   });
 
-  return googleResponse.toDataStreamResponse();
+  return googleResponse.toTextStreamResponse();
 };
